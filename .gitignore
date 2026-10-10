@@ -1,0 +1,63 @@
+# Secrets / environment (only the placeholder template is committed)
+.env
+.env.*
+!.env.example
+docker-compose.override.yml
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build / generated output
+dist/
+build/
+*.log
+logs/
+
+# Local data volumes / uploads
+pgdata/
+redisdata/
+miniodata/
+*.sqlite3
+*.dump
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Database backups contain account data and password hashes: never commit them
+backups/
+
+# Original (unconverted) background video sources: the optimised copies used by the app are in frontend/public/videos
+background videos/
+
+# Local scratch
+*.tmp
+*.bak

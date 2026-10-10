@@ -1,0 +1,123 @@
+# AssignFlow — Phase 1 service foundation (architecture §10).
+# Containers address each other by service name; only 5173 and 8000 are published to the host.
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks: [assignflow_net]
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks: [assignflow_net]
+
+  minio:
+    # The upstream minio/minio (Docker Hub) and quay.io/minio/minio images are no longer
+    # available. pgsty/minio is a maintained, drop-in build of the MinIO server (same CLI,
+    # S3 API and health endpoints). Pinned to a release tag; see docs/IMPLEMENTATION_LOG.md.
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    restart: unless-stopped
+    command: ["server", "/data"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set MINIO_ROOT_USER in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set MINIO_ROOT_PASSWORD in .env}
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    networks: [assignflow_net]
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in .env}
+      REDIS_URL: ${REDIS_URL:?set REDIS_URL in .env}
+      S3_ENDPOINT_URL: ${S3_ENDPOINT_URL:?set S3_ENDPOINT_URL in .env}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:?set FRONTEND_ORIGIN in .env}
+      # Reserved for later phases (not used by Phase 1 code):
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-}
+      S3_BUCKET: ${S3_BUCKET:-assignflow-submissions}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      JWT_SECRET: ${JWT_SECRET:-}
+      JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES:-120}
+      SEED_DEMO_PASSWORD: ${SEED_DEMO_PASSWORD:-}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-10}
+      APP_TIMEZONE_DISPLAY: ${APP_TIMEZONE_DISPLAY:-Asia/Kolkata}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      # Fails (non-2xx -> exception) when /health returns 503, i.e. when a dependency is down.
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=8)"
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    networks: [assignflow_net]
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Public, build-time, browser-facing URL (must be host-reachable, not http://backend:8000).
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000/api/v1}
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5173:5173"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO /dev/null http://127.0.0.1:5173/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks: [assignflow_net]
+
+networks:
+  assignflow_net:
+    name: assignflow_net
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:

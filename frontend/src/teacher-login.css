@@ -1,0 +1,184 @@
+/* Faculty login page only (the left column reuses the .sl-* styles of the student page unchanged).
+   One warm grey-beige painted composition spans the whole viewport. The classroom clip sits on the right and every edge
+   of it is feathered into that same beige (no frame, border, shadow or divider), so it reads as part of the page. */
+
+.sl-page.tl-page {
+  --tl-beige: #d3cbbf;
+  background:
+    radial-gradient(640px 520px at 5% 3%, rgb(246 242 234 / 80%), transparent 70%),
+    radial-gradient(560px 480px at 30% 108%, rgb(226 218 205 / 75%), transparent 70%),
+    radial-gradient(700px 520px at 60% 50%, rgb(222 214 200 / 60%), transparent 72%),
+    linear-gradient(90deg, #ddd6ca 0%, #d6cec2 30%, var(--tl-beige) 55%, #cdc4b7 100%);
+}
+
+/* Brush-stroke streaks, tinted warm (the shared streak shapes are kept). */
+.sl-page.tl-page::before {
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgb(255 252 244 / 60%) 40%,
+    rgb(255 252 244 / 10%) 85%,
+    transparent
+  );
+}
+
+.sl-page.tl-page::after {
+  background: linear-gradient(
+    80deg,
+    transparent,
+    rgb(166 154 134 / 35%) 45%,
+    rgb(255 252 244 / 28%) 80%,
+    transparent
+  );
+}
+
+.tl-right {
+  position: relative;
+}
+
+.tl-video {
+  position: absolute;
+  inset: 0 0 0 0;
+  overflow: hidden;
+  border-radius: 34px; /* kept rounded, but the feathered mask means no visible outline */
+  background:
+    radial-gradient(520px 380px at 62% 38%, rgb(240 232 214 / 60%), transparent 70%),
+    radial-gradient(640px 520px at 30% 85%, rgb(170 160 140 / 45%), transparent 70%);
+  /* Feather: strong on the left (into the form side), gentle on the top, right and bottom. */
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0, #000 22%, #000 94%, transparent 100%),
+    linear-gradient(180deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent 0, #000 22%, #000 94%, transparent 100%),
+    linear-gradient(180deg, transparent 0, #000 9%, #000 91%, transparent 100%);
+  mask-composite: intersect;
+}
+
+.tl-video-el {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 66% 50%; /* keeps the teacher, blackboard and students in frame */
+  background: transparent;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+
+.tl-video-playing .tl-video-el {
+  opacity: 1;
+}
+
+.tl-video-failed .tl-video-el {
+  display: none;
+}
+
+/* Subtle warm overlay: blends the footage's left side into the page beige without blurring the picture. */
+.tl-video-tint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(211 203 191 / 55%), rgb(211 203 191 / 0%) 34%),
+    linear-gradient(180deg, rgb(211 203 191 / 0%) 70%, rgb(211 203 191 / 25%));
+}
+
+@media (max-width: 1024px) {
+  .tl-video {
+    border-radius: 26px;
+  }
+}
+
+/* Tablets, small laptops and zoomed browser windows (641-1024 px): keep the SPLIT layout so the video is always beside
+   the form. The shared stacked rules of the student page start at 760 px, so they are overridden here (teacher page
+   only), and the card is sized to fit its column so it never overlaps the video panel. */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .sl-page.tl-page {
+    grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
+    grid-template-rows: none;
+  }
+
+  .tl-page .sl-left {
+    min-width: 0;
+    padding: 16px 14px;
+  }
+
+  .tl-page .sl-stack {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .tl-page .sl-brand {
+    gap: 8px;
+    font-size: clamp(1.7rem, 4.6vw, 2.7rem);
+  }
+
+  .tl-page .sl-card,
+  .tl-page .sl-form,
+  .tl-page .sl-field,
+  .tl-page .sl-input {
+    min-width: 0;
+  }
+
+  .tl-page .sl-input input {
+    width: 0; /* flex: 1 supplies the width; the default intrinsic width must not set a minimum */
+  }
+
+  .tl-page .sl-card {
+    padding: 18px 16px 14px;
+    border-radius: 22px;
+  }
+
+  .tl-page .sl-title {
+    font-size: 1.3rem;
+  }
+
+  .tl-page .sl-subtitle {
+    margin-bottom: 14px;
+    font-size: 0.92rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 760px) {
+  .sl-page.tl-page .sl-right {
+    order: 0;
+    height: auto;
+    padding: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Stacked: the form first, the clip below at a reduced height, feathered into the page beige from above. */
+  .sl-page.tl-page {
+    background:
+      radial-gradient(500px 360px at 10% 0%, rgb(246 242 234 / 80%), transparent 70%),
+      linear-gradient(180deg, #ddd6ca 0%, #d6cec2 45%, var(--tl-beige) 100%);
+  }
+
+  .tl-right {
+    height: clamp(210px, 34vh, 320px);
+  }
+
+  .tl-video {
+    border-radius: 22px;
+    -webkit-mask-image:
+      linear-gradient(180deg, transparent 0, #000 30%, #000 92%, transparent 100%),
+      linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+    mask-image:
+      linear-gradient(180deg, transparent 0, #000 30%, #000 92%, transparent 100%),
+      linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+  }
+
+  .tl-video-tint {
+    background: linear-gradient(180deg, rgb(211 203 191 / 40%), rgb(211 203 191 / 0%) 40%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tl-video-el {
+    transition: none;
+  }
+}

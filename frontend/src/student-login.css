@@ -1,0 +1,568 @@
+/* Student login page only. Every selector is prefixed .sl- so nothing else in the app is affected.
+
+   One continuous muted grey-blue composition: the page background is the same colour as the edge of the supplied
+   illustration video (measured: rgb(191, 193, 198) on every frame), so the video's left edge can fade into the page
+   without a seam, and the grey runs from the right illustration across the whole page. */
+
+.sl-page {
+  --sl-navy: #0f1d3d;
+  --sl-blue: #246bfd;
+  --sl-cyan: #19b8e6;
+  --sl-grey: #bfc1c6; /* = the video's edge colour */
+  --sl-border: rgb(255 255 255 / 70%);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 43fr) minmax(0, 57fr); /* left login area 43%, right visual 57% */
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  color: var(--sl-navy);
+  background:
+    radial-gradient(620px 560px at 6% 4%, rgb(240 242 246 / 75%), transparent 70%),
+    radial-gradient(520px 520px at 22% 105%, rgb(214 218 226 / 65%), transparent 70%),
+    linear-gradient(90deg, #d4d7de 0%, #c9ccd3 22%, var(--sl-grey) 40%, var(--sl-grey) 100%);
+}
+
+/* Soft, irregular brush-like tonal streaks on the left that continue the look of the illustration. Decorative only,
+   behind everything, and low contrast so the form stays perfectly readable. */
+.sl-page::before,
+.sl-page::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  filter: blur(14px);
+  opacity: 0.55;
+}
+
+.sl-page::before {
+  left: -8%;
+  top: 8%;
+  width: 44%;
+  height: 22%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgb(255 255 255 / 55%) 40%,
+    rgb(255 255 255 / 10%) 85%,
+    transparent
+  );
+  transform: rotate(-16deg) skewX(-18deg);
+}
+
+.sl-page::after {
+  left: -12%;
+  bottom: 4%;
+  width: 46%;
+  height: 26%;
+  background: linear-gradient(
+    80deg,
+    transparent,
+    rgb(150 156 172 / 35%) 45%,
+    rgb(255 255 255 / 25%) 80%,
+    transparent
+  );
+  transform: rotate(-12deg) skewX(-22deg);
+}
+
+/* ---------- left column ---------- */
+.sl-left {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: clamp(20px, 4vh, 48px) clamp(20px, 5vw, 96px);
+}
+
+.sl-stack {
+  width: min(100%, clamp(400px, 31vw, 580px));
+  display: grid;
+  gap: clamp(16px, 2.4vh, 28px);
+}
+
+.sl-brand {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1vw, 16px);
+  margin: 0;
+  font-size: clamp(2.4rem, 3.7vw + 0.6rem, 4.7rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--sl-navy);
+  transition: color 0.25s;
+}
+
+.sl-brand-icon {
+  flex: none;
+  width: 0.82em;
+  height: 0.82em;
+  color: var(--sl-blue);
+}
+
+.sl-flow {
+  color: var(--sl-blue);
+  transition: color 0.25s;
+}
+
+.sl-brand:hover .sl-brand-text {
+  color: #1a3a82;
+}
+
+.sl-brand:hover .sl-flow {
+  color: #1457e0;
+}
+
+/* ---------- card ---------- */
+.sl-card {
+  padding: clamp(22px, 3.4vh, 38px) clamp(22px, 2.6vw, 40px) 18px;
+  background: rgb(255 255 255 / 76%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--sl-border);
+  border-radius: 26px;
+  box-shadow: 0 16px 44px rgb(35 48 80 / 16%);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.sl-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 24px 56px rgb(35 48 80 / 22%);
+}
+
+.sl-card:focus-within {
+  transform: none; /* stays still while the user types */
+}
+
+.sl-title {
+  margin: 0;
+  font-size: clamp(1.35rem, 1.1vw + 1rem, 1.9rem);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.sl-subtitle {
+  margin: 6px 0 20px;
+  color: #55637f;
+}
+
+.sl-form {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.sl-field {
+  display: grid;
+  gap: 6px;
+}
+
+.sl-field label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.sl-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgb(255 255 255 / 92%);
+  border: 1.5px solid #d5dae4;
+  border-radius: 14px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.sl-input:hover {
+  border-color: #aebbd3;
+}
+
+.sl-input:focus-within {
+  border-color: var(--sl-blue);
+  box-shadow: 0 0 0 4px rgb(36 107 253 / 16%);
+}
+
+.sl-input.invalid {
+  border-color: #d3304a;
+}
+
+.sl-input.invalid:focus-within {
+  box-shadow: 0 0 0 4px rgb(211 48 74 / 16%);
+}
+
+.sl-input-icon {
+  flex: none;
+  margin-left: 14px;
+  color: #6f7e9b;
+  transition: color 0.2s;
+}
+
+.sl-input:hover .sl-input-icon,
+.sl-input:focus-within .sl-input-icon {
+  color: var(--sl-blue);
+}
+
+.sl-input input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 14px 14px 10px;
+  font-size: 1rem;
+  color: var(--sl-navy);
+  background: transparent;
+  border: 0;
+  border-radius: 14px;
+  outline: none;
+}
+
+.sl-input input::placeholder {
+  color: #8d9ab3;
+}
+
+.sl-eye {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-right: 4px;
+  padding: 0;
+  color: #5e6e8f;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  transition:
+    color 0.2s,
+    background-color 0.2s;
+}
+
+.sl-eye:hover:not(:disabled) {
+  color: var(--sl-blue);
+  background: #e6eefc;
+}
+
+.sl-eye:focus-visible {
+  outline: 3px solid rgb(36 107 253 / 45%);
+}
+
+/* Errors reserve their line, so showing one never moves the form. */
+.sl-error {
+  height: 1.5rem; /* fixed: an error appearing never changes the card's height */
+  line-height: 1.5rem;
+  margin: 0;
+  overflow: visible;
+  color: #c4223b;
+  font-size: 0.86rem;
+}
+
+.sl-server {
+  height: 3.25rem; /* room for one error box, reserved up front */
+}
+
+.sl-server-error {
+  margin: 0;
+  padding: 8px 12px;
+  color: #b3263d;
+  background: #ffe9eb;
+  border: 1px solid #f7c4cb;
+  border-radius: 10px;
+  font-size: 0.92rem;
+}
+
+.sl-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 15px 18px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, var(--sl-blue), var(--sl-cyan));
+  border: 0;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgb(36 107 253 / 30%);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
+}
+
+.sl-submit:hover:not(:disabled) {
+  background: linear-gradient(90deg, var(--sl-blue), var(--sl-cyan));
+  color: #fff;
+  filter: brightness(1.08) saturate(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgb(36 107 253 / 36%);
+}
+
+.sl-submit:active:not(:disabled) {
+  transform: translateY(0);
+  filter: brightness(0.96);
+  box-shadow: 0 4px 12px rgb(36 107 253 / 28%);
+}
+
+.sl-submit:focus-visible {
+  outline: 3px solid rgb(36 107 253 / 45%);
+  outline-offset: 3px;
+}
+
+.sl-submit:disabled {
+  opacity: 0.8;
+  cursor: progress;
+}
+
+.sl-spin {
+  animation: sl-spin 0.9s linear infinite;
+}
+
+.sl-card-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  text-align: center;
+  color: #66748f;
+  font-size: 0.9rem;
+  border-top: 1px solid #dfe4ee;
+}
+
+.sl-links {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 0.95rem;
+  color: #55637f;
+}
+
+.sl-links a {
+  color: #1f56d6;
+  transition: color 0.2s;
+}
+
+.sl-links a:hover {
+  color: #0f3fb0;
+}
+
+.sl-links .sl-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+.sl-links .sl-back svg {
+  transition: transform 0.2s;
+}
+
+.sl-links .sl-back:hover svg {
+  transform: translateX(-3px);
+}
+
+.sl-links a:focus-visible {
+  outline: 2px solid var(--sl-blue);
+  outline-offset: 3px;
+}
+
+/* ---------- right column: the illustration video, blended into the page ---------- */
+.sl-right {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.sl-video {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  /* The left edge fades into the page grey (the clip's edge colour equals the page colour). No box, no rounding. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 14%);
+  /* Fallback when the video is loading, refused or failed: the same grey-blue, with soft brush-like tones. */
+  background:
+    radial-gradient(520px 420px at 62% 48%, rgb(236 226 205 / 45%), transparent 70%),
+    radial-gradient(640px 520px at 40% 80%, rgb(160 168 186 / 55%), transparent 70%),
+    radial-gradient(520px 360px at 70% 12%, rgb(220 224 232 / 60%), transparent 70%), var(--sl-grey);
+}
+
+.sl-video-el {
+  position: absolute;
+  /* The element itself is a square (the cropped picture is square), so there is no letterbox to paint black: its
+     height follows the panel, and the page-coloured grey simply surrounds it. */
+  top: 50%;
+  right: 2%;
+  width: min(98%, 100dvh);
+  height: auto;
+  aspect-ratio: 1 / 1;
+  transform: translateY(-50%);
+  object-fit: cover;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none; /* hovering never touches playback */
+  /* The supplied clip is a 1080x1080 picture centred in a 1920x1080 frame (420 px black bars baked into each side).
+     Crop the media's view box to the picture so no black bar is ever shown. */
+  object-view-box: inset(0.8% 22.3%);
+  /* A short feather on every edge hides any hairline difference between the picture's edge and the page grey. */
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent, #000 3.5%, #000 96.5%, transparent),
+    linear-gradient(180deg, transparent, #000 3.5%, #000 96.5%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent, #000 3.5%, #000 96.5%, transparent),
+    linear-gradient(180deg, transparent, #000 3.5%, #000 96.5%, transparent);
+  mask-composite: intersect;
+}
+
+@supports not (object-view-box: inset(0)) {
+  .sl-video-el {
+    transform: translateY(-50%) scale(1.8); /* same crop for browsers without object-view-box */
+  }
+}
+
+.sl-video-playing .sl-video-el {
+  opacity: 1;
+}
+
+.sl-video-failed .sl-video-el {
+  display: none;
+}
+
+.sl-video-tint {
+  display: none; /* the clip's own colours already match the page */
+}
+
+/* ---------- entrance ---------- */
+@keyframes sl-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sl-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sl-brand {
+  animation: sl-rise 0.55s ease backwards;
+}
+
+.sl-card {
+  animation: sl-rise 0.6s 0.1s ease backwards;
+}
+
+.sl-links {
+  animation: sl-rise 0.6s 0.2s ease backwards;
+}
+
+.sl-right {
+  animation: sl-fade 0.8s 0.05s ease backwards;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1024px) {
+  .sl-page {
+    grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
+  }
+
+  .sl-left {
+    padding-inline: clamp(16px, 3vw, 40px);
+  }
+
+  .sl-stack {
+    width: min(100%, 440px);
+  }
+
+  .sl-brand {
+    font-size: clamp(2rem, 4.2vw + 0.4rem, 3rem);
+  }
+}
+
+@media (max-width: 760px) {
+  /* Stacked: brand and form first, the illustration below at a reduced height, fading in from the page grey. */
+  .sl-page {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    min-height: 100dvh;
+    background:
+      radial-gradient(500px 360px at 10% 0%, rgb(240 242 246 / 75%), transparent 70%),
+      linear-gradient(180deg, #d4d7de 0%, #c9ccd3 40%, var(--sl-grey) 100%);
+  }
+
+  .sl-left {
+    padding: 22px 16px 8px;
+  }
+
+  .sl-stack {
+    width: 100%;
+  }
+
+  .sl-brand {
+    font-size: 2.4rem;
+  }
+
+  .sl-right {
+    height: clamp(210px, 34vh, 320px);
+  }
+
+  .sl-video {
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 30%);
+    mask-image: linear-gradient(180deg, transparent 0, #000 30%);
+  }
+
+  .sl-input input {
+    padding-block: 15px;
+    font-size: 16px; /* no iOS zoom on focus */
+  }
+
+  .sl-submit {
+    padding-block: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sl-brand,
+  .sl-card,
+  .sl-links,
+  .sl-right {
+    animation: none;
+  }
+
+  .sl-card,
+  .sl-submit,
+  .sl-input,
+  .sl-video-el {
+    transition: none;
+  }
+
+  .sl-card:hover,
+  .sl-submit:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .sl-spin {
+    animation-duration: 2.4s;
+  }
+}
